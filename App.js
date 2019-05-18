@@ -6,19 +6,12 @@ import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import 'babel-polyfill';
 import thunkMiddleware from 'redux-thunk'
-import rootReducer from './store';
-import { persistStore, persistReducer } from 'redux-persist'
-import FSStorage, { CacheDir } from 'redux-persist-expo-fs-storage';
+import persistedReducer from './store';
+import { persistStore } from 'redux-persist'
+
 import { PersistGate } from 'redux-persist/integration/react'
 
-const storage = FSStorage(CacheDir, `reduxPersist`);
-const persistConfig = {
-  key: 'root',
-  storage,
-};
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-let store = createStore(persistedReducer);
+let store = createStore(persistedReducer, applyMiddleware(thunkMiddleware));
 let persistor = persistStore(store);
 
 export default class App extends React.Component {
@@ -37,7 +30,7 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <Provider store={createStore(rootReducer, applyMiddleware(thunkMiddleware))}>
+        <Provider store={store}>
           <PersistGate loading={<AppLoading />} persistor={persistor}>
             <View style={styles.container}>
               {Platform.OS === 'ios' && <StatusBar barStyle="default" />}

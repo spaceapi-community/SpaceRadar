@@ -1,6 +1,14 @@
-import { combineReducers } from 'redux';
+import { persistCombineReducers } from 'redux-persist'
 import { reducer as spaces } from './spaces';
+import {AsyncStorage} from "react-native";
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 
-export default combineReducers({
+const persistConfig = {
+  key: 'root',
+  storage: AsyncStorage,
+  stateReconciler: autoMergeLevel2,
+};
+
+export default persistCombineReducers(persistConfig, {
   spaces,
 });

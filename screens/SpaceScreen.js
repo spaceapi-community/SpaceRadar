@@ -2,6 +2,7 @@ import React from 'react';
 import {ScrollView, StyleSheet, Image, SectionList, View} from 'react-native';
 import {
   Text,
+  Icon,
 } from 'react-native-elements';
 import {actions as spaceActions} from "../store/spaces";
 import {connect} from "react-redux";
@@ -37,17 +38,8 @@ class SpaceScreen extends React.Component {
     this.fetchCalendar();
   }
 
-  fetchSpace = () => {
-    if (!this.getSpace()) {
-      this.props.fetchSpace(this.props.navigation.getParam("url"));
-    }
-  };
-
-  fetchCalendar = () => {
-    if (!this.getCalendar()) {
-      this.props.fetchCalendar(this.props.navigation.getParam("url"));
-    }
-  };
+  fetchSpace = () => this.props.fetchSpace(this.props.navigation.getParam("url"));
+  fetchCalendar = () => this.props.fetchCalendar(this.props.navigation.getParam("url"));
 
   getFilteredSpaces = () => this.props.directory[this.props.navigation.getParam("url")];
   getSpace = () => this.getFilteredSpaces().data;
@@ -62,31 +54,32 @@ class SpaceScreen extends React.Component {
     if (this.getSpace() && this.getSpace().contact) {
       if (this.getSpace().contact.email) {
         section.data.push({
-          image: require("../assets/images/envelope-regular.png"),
+          iconName: 'email',
           value: this.getSpace().contact.email,
         });
       }
       if (this.getSpace().contact.ml) {
         section.data.push({
-          image: require("../assets/images/mail-bulk-solid.png"),
+          iconName: 'contact-mail',
           value: this.getSpace().contact.ml,
         });
       }
       if (this.getSpace().contact.twitter) {
         section.data.push({
-          image: require("../assets/images/twitter-brands.png"),
+          type: 'material-community',
+          iconName: 'twitter',
           value: this.getSpace().contact.twitter,
         });
       }
       if (this.getSpace().contact.irc) {
         section.data.push({
-          image: require("../assets/images/comments-regular.png"),
+          iconName: 'comment',
           value: this.getSpace().contact.irc,
         });
       }
       if (this.getSpace().contact.phone) {
         section.data.push({
-          image: require("../assets/images/phone-solid.png"),
+          iconName: 'local-phone',
           value: this.getSpace().contact.phone,
         })
       }
@@ -104,7 +97,7 @@ class SpaceScreen extends React.Component {
 
     if (this.getSpace() && this.getSpace().location && this.getSpace().location.address) {
       section.data.push({
-        image: require("../assets/images/map-marked-alt-solid.png"),
+        iconName: 'location-on',
         value: this.getSpace().location.address,
       });
     }
@@ -121,7 +114,7 @@ class SpaceScreen extends React.Component {
     if (this.getSpace() && this.getSpace().state) {
       if (this.getSpace().state.open != null) {
         section.data.push({
-          image: require("../assets/images/lock-solid.png"),
+          iconName: 'lock',
           value: this.getSpace().state.open ? "open" : "closed",
         });
       }
@@ -130,7 +123,7 @@ class SpaceScreen extends React.Component {
         const date = new Date();
         date.setTime(this.getSpace().state.lastchange * 1000);
         section.data.push({
-          image: require("../assets/images/clock-regular.png"),
+          iconName: 'access-time',
           value: date.toUTCString(),
         });
       }
@@ -154,6 +147,7 @@ class SpaceScreen extends React.Component {
         .forEach(event => {
         if (event.dtstart.value > currentDate) {
           section.data.push({
+            iconName: 'today',
             value: `${event.dtstart.value.toLocaleDateString("de_DE")} ${event.summary.value}`,
           });
         }
@@ -213,7 +207,9 @@ class SpaceScreen extends React.Component {
             {this.getLogo()}
           </View>
           <View style={{ flex: 1, flexDirection: "column", flexGrow: 2 }}>
-            <Text h3>{this.getSpace() && this.getSpace().space}</Text>
+            <Text h3>
+              {this.getSpace() && this.getSpace().space}
+            </Text>
             {this.getSpace() && <Touchable
               background={Touchable.Ripple('#ccc', false)}
               onPress={this.getHandleUrlPress(this.getSpace().url)}>
@@ -221,14 +217,27 @@ class SpaceScreen extends React.Component {
             </Touchable>}
           </View>
         </View>
+        <View style={styles.settings}>
+          <Icon
+            name={this.getFilteredSpaces().favorite ? 'favorite' : 'favorite-border'}
+            type={'material'}
+            onPress={() => this.props.changeFavorite(this.props.navigation.getParam("url"))}
+          />
+          <Icon
+            name={'autorenew'}
+            type={'material'}
+            onPress={() => this.props.fetchSpace(this.props.navigation.getParam("url"), true)}
+          />
+        </View>
         <View>
           <SectionList
             renderItem={({item, index}) => {
               return (
                 <View style={{flex: 1, flexDirection: "row", alignItems: "center",}}>
-                  <Image
+                  <Icon
+                    name={item.iconName ? item.iconName : "warning"}
+                    type={item.type ? item.type : 'material'}
                     style={styles.infoIcon}
-                    source={item.image ? item.image : require("../assets/images/blank.png")}
                   />
                   <Text key={index}>
                     {item.value}
@@ -256,6 +265,7 @@ SpaceScreen.propTypes = {
   directory: PropTypes.object,
   fetchSpace: PropTypes.func.isRequired,
   fetchCalendar: PropTypes.func.isRequired,
+  changeFavorite: PropTypes.func.isRequired,
 };
 
 SpaceScreen.defaultProps = {
@@ -281,7 +291,11 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     margin: 3,
-  }
+    marginLeft: 10,
+  },
+  settings: {
+    flexDirection: "row",
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SpaceScreen)

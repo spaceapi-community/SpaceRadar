@@ -14,21 +14,24 @@ const fetchSpaces = () => (dispatch, getState) => {
   });
 };
 
-const fetchSpace = url => (dispatch, getState) => {
+const fetchSpace = (url, forceFetch = false) => (dispatch, getState) => {
   const space = getState().spaces.directory[url];
 
   if(space
     && !space.data
-    || moment(space.dataFetched).add(30, 'minutes') < Date.now()) {
+    || moment(space.dataFetched).add(30, 'minutes') < Date.now()
+    || forceFetch) {
     return fetch(url)
       .then(response => response.json())
       .then(json => dispatch(spaceFetched(url, json)));
   }
 };
 
-const fetchCalendar = url => (dispatch, getState) => {
+const fetchCalendar = (url, forceFetch = false) => (dispatch, getState) => {
   const calendarUrl = getCalendarUrl(getState().spaces.directory[url].data);
-  if (calendarUrl) {
+  if (calendarUrl
+    || moment(getState().spaces.directory[url].eventsFetched).add(30, 'minutes') < Date.now()
+    || forceFetch) {
     return fetch(calendarUrl)
       .then(response => response.text())
       .then(data => {
@@ -45,6 +48,15 @@ const fetchCalendar = url => (dispatch, getState) => {
   }
 };
 
+const changeFavorite = url => (dispatch, getState) => {
+  dispatch(
+    favoriteChanged(
+      url,
+      getState().spaces.directory[url].favorite,
+    )
+  );
+};
+
 const getCalendarUrl = (space) => {
   if (space !== undefined
     && space.feeds
@@ -53,6 +65,12 @@ const getCalendarUrl = (space) => {
     return space.feeds.calendar.url;
   }
 };
+
+const favoriteChanged = (url, favorite) => ({
+  type: 'FAVORITE_CHANGED',
+  url,
+  favorite: !favorite,
+});
 
 const calendarFetched = (url, events) => ({
   type: 'CALENDAR_FETCHED',
@@ -76,6 +94,7 @@ export const actions = {
   fetchCalendar,
   fetchSpaces,
   fetchSpace,
+  changeFavorite,
 };
 
 const initialState = {
@@ -92,7 +111,7 @@ export const reducer = (state = initialState, action) => {
         }, {})};
     case 'SPACE_FETCHED': {
       const directory = { ...state.directory };
-      directory[action.url].data = { ...directory[action.url].data, ...action.space } ;
+      directory[action.url].data = action.space;
       directory[action.url].dataFetched = Date.now();
 
       return {...state, directory };
@@ -106,6 +125,12 @@ export const reducer = (state = initialState, action) => {
         ...state,
         directory,
       };
+    }
+    case 'FAVORITE_CHANGED': {
+      const directory = { ...state.directory };
+      directory[action.url].favorite = action.favorite;
+
+      return {...state, directory };
     }
   }
   return state;

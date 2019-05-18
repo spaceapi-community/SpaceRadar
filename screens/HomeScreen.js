@@ -7,7 +7,8 @@ import {
   View,
 } from 'react-native';
 import {
-  ListItem
+  ListItem,
+  Icon,
 } from 'react-native-elements';
 import { connect } from 'react-redux'
 import { actions } from '../store/spaces';
@@ -40,6 +41,12 @@ class HomeScreen extends React.Component {
             title={item.item.space}
             subtitle={item.item.url}
             onPress={() => this.props.navigation.navigate('SpaceDetails', item.item)}
+            rightIcon={
+              <Icon
+                name={'navigate-next'}
+                type={'material'}
+              />
+            }
           />
         )
         : null;
