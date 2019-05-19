@@ -1,6 +1,7 @@
 import React from 'react';
 import {ScrollView, StyleSheet, Image, SectionList, View} from 'react-native';
 import {
+  Button,
   Text,
   Icon,
 } from 'react-native-elements';
@@ -8,7 +9,8 @@ import {actions as spaceActions} from "../store/spaces";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
 import Touchable from 'react-native-platform-touchable';
-import {WebBrowser} from "expo";
+import { WebBrowser } from "expo";
+import moment from 'moment';
 
 const mapStateToProps = (state) => ({
   directory: state.spaces.directory,
@@ -148,7 +150,7 @@ class SpaceScreen extends React.Component {
         if (event.dtstart.value > currentDate) {
           section.data.push({
             iconName: 'today',
-            value: `${event.dtstart.value.toLocaleDateString("de_DE")} ${event.summary.value}`,
+            value: `${moment(event.dtstart.value).format('YYYY-MM-DD HH:mm')} ${event.summary.value}`,
           });
         }
       });
@@ -218,15 +220,27 @@ class SpaceScreen extends React.Component {
           </View>
         </View>
         <View style={styles.settings}>
-          <Icon
-            name={this.getFilteredSpaces().favorite ? 'favorite' : 'favorite-border'}
-            type={'material'}
+          <Button
+            containerStyle={{ flexGrow: 1, padding: 1 }}
+            buttonStyle={{ backgroundColor: '#ccc', }}
             onPress={() => this.props.changeFavorite(this.props.navigation.getParam("url"))}
+            icon={
+              <Icon
+                name={this.getFilteredSpaces().favorite ? 'favorite' : 'favorite-border'}
+                type={'material'}
+                />
+            }
           />
-          <Icon
-            name={'autorenew'}
-            type={'material'}
+          <Button
+            containerStyle={{ flexGrow: 1, padding: 1 }}
+            buttonStyle={{ backgroundColor: '#ccc', }}
             onPress={() => this.props.fetchSpace(this.props.navigation.getParam("url"), true)}
+            icon={
+              <Icon
+                name={'autorenew'}
+                type={'material'}
+              />
+            }
           />
         </View>
         <View>
@@ -295,6 +309,7 @@ const styles = StyleSheet.create({
   },
   settings: {
     flexDirection: "row",
+    justifyContent: "space-around"
   },
 });
 

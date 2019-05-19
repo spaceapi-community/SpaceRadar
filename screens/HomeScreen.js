@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {
   ListItem,
+  Text,
   Icon,
 } from 'react-native-elements';
 import { connect } from 'react-redux'
@@ -52,21 +53,57 @@ class HomeScreen extends React.Component {
         : null;
 
   render() {
+    const favorites = Object.values(this.props.spaces)
+      .filter(space => space.favorite)
+      .sort(
+        (a, b) =>
+          a.space.toLowerCase().localeCompare(b.space.toLowerCase())
+      );
+
+    const spaces = Object.values(this.props.spaces)
+      .filter(space => !space.favorite)
+      .sort(
+        (a, b) =>
+          a.space.toLowerCase().localeCompare(b.space.toLowerCase())
+      );
+
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <FlatList
-                data={Object.values(this.props.spaces).sort(
-                  (a, b) =>
-                    a.space.toLowerCase().localeCompare(b.space.toLowerCase())
-                )}
-                style={{ width: '100%' }}
-                renderItem={this.renderItem}
-                keyExtractor={(item) => item.url}
-            />
-
-          </View>
+          {favorites.length > 0 &&
+            (
+              <View style={styles.welcomeContainer}>
+                <Text h5 style={{ paddingLeft: 15 }}>
+                  favorites
+                </Text>
+                <FlatList
+                  data={favorites}
+                  style={{ width: '100%' }}
+                  renderItem={this.renderItem}
+                  keyExtractor={(item) => item.url}
+                />
+              </View>
+            )
+          }
+          {spaces.length > 0 &&
+            (
+              <View style={styles.welcomeContainer}>
+                {favorites.length > 0 &&
+                  (
+                    <Text h5 style={{ paddingLeft: 15 }}>
+                      spaces
+                    </Text>
+                  )
+                }
+                <FlatList
+                  data={spaces}
+                  style={{ width: '100%' }}
+                  renderItem={this.renderItem}
+                  keyExtractor={(item) => item.url}
+                />
+              </View>
+            )
+          }
         </ScrollView>
       </View>
     );
@@ -103,7 +140,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   welcomeContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginTop: 10,
     marginBottom: 20,
   },
