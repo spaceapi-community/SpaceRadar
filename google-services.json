@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "182218107092",
+    "firebase_url": "https://space-radar.firebaseio.com",
+    "project_id": "space-radar",
+    "storage_bucket": "space-radar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:182218107092:android:5a78ab5eec09281b",
+        "android_client_info": {
+          "package_name": "app.spaceradar.view"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "182218107092-402t91gkjls6951d16940all1t7g7kmb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.spaceradar.view",
+            "certificate_hash": "874378dd2dde061301462fb85fe1c53a602e20f6"
+          }
+        },
+        {
+          "client_id": "182218107092-ao3dpv5ghjaq3dfou17r9e7aphod46bv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzIx1AjCQnBgoJ-m2UIfKMRVEicw27Hno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "182218107092-ao3dpv5ghjaq3dfou17r9e7aphod46bv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

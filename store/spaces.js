@@ -1,5 +1,6 @@
 import moment from 'moment';
 import ical from "cal-parser";
+import registerPush from "../registerPush.js";
 
 const fetchDirectory = () => dispatch => fetch('https://directory.spaceapi.io/v2')
   .then(response => response.json())
@@ -49,12 +50,19 @@ const fetchCalendar = (url, forceFetch = false) => (dispatch, getState) => {
 };
 
 const changeFavorite = url => (dispatch, getState) => {
+  const favorite = !getState().spaces.directory[url].favorite;
   dispatch(
     favoriteChanged(
       url,
-      getState().spaces.directory[url].favorite,
+      favorite,
     )
   );
+
+  const favoriteSpacesUrls = Object.values(getState().spaces.directory)
+    .filter(entry => entry.url === url ? favorite : entry.favorite)
+    .map(entry => entry.url);
+
+  registerPush(favoriteSpacesUrls).then(() => dispatch(favoritePushUpdated(favoriteSpacesUrls)))
 };
 
 const getCalendarUrl = (space) => {
@@ -69,8 +77,15 @@ const getCalendarUrl = (space) => {
 const favoriteChanged = (url, favorite) => ({
   type: 'FAVORITE_CHANGED',
   url,
-  favorite: !favorite,
+  favorite,
 });
+
+const favoritePushUpdated = (pushActive, favoriteSpacesUrls) => ({
+  type: 'FAVORITE_PUSH_UPDATED',
+  pushActive,
+  favoriteSpacesUrls,
+});
+
 
 const calendarFetched = (url, events) => ({
   type: 'CALENDAR_FETCHED',
@@ -99,6 +114,7 @@ export const actions = {
 
 const initialState = {
   directory: {},
+  pushActive: false,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -131,6 +147,9 @@ export const reducer = (state = initialState, action) => {
       directory[action.url].favorite = action.favorite;
 
       return {...state, directory };
+    }
+    case 'FAVORITE_PUSH_UPDATED': {
+      return { ...state, pushActive: action.pushActive };
     }
   }
   return state;

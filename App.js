@@ -15,7 +15,6 @@ import { PersistGate } from 'redux-persist/integration/react'
 let store = createStore(persistedReducer, applyMiddleware(thunkMiddleware));
 let persistor = persistStore(store);
 
-
 moment().locale(Localization.locale);
 
 export default class App extends React.Component {

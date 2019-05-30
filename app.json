@@ -16,6 +16,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "notification": {
+      "icon": "./assets/images/notificationIcon.png",
+      "color": "#023462"
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -33,7 +37,8 @@
         "googleMaps": {
           "apiKey": "AIzaSyCJGLNTfWTZPrSvz7xt2HY1e7jUMv-h07Q"
         }
-      }
+      },
+      "googleServicesFile": "./google-services.json"
     }
   }
 }
