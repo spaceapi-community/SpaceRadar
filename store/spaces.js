@@ -2,7 +2,7 @@ import moment from 'moment';
 import ical from "cal-parser";
 import registerPush from "../registerPush.js";
 
-const fetchDirectory = () => dispatch => fetch('https://directory.spaceapi.io/v2')
+const fetchDirectory = () => dispatch => fetch('https://api.spaceapi.io/v2')
   .then(response => response.json())
   .then(json => dispatch(directoryFetched(json)));
 
@@ -58,11 +58,12 @@ const changeFavorite = url => (dispatch, getState) => {
     )
   );
 
-  const favoriteSpacesUrls = Object.values(getState().spaces.directory)
+  /* const favoriteSpacesUrls = Object.values(getState().spaces.directory)
     .filter(entry => entry.url === url ? favorite : entry.favorite)
     .map(entry => entry.url);
 
   registerPush(favoriteSpacesUrls).then(() => dispatch(favoritePushUpdated(favoriteSpacesUrls)))
+  */
 };
 
 const getCalendarUrl = (space) => {

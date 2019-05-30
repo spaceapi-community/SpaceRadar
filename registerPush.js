@@ -1,6 +1,6 @@
 import { Permissions, Notifications } from 'expo';
 
-const PUSH_ENDPOINT = 'http://sally.szigat.de:8080/users/push-token';
+const PUSH_ENDPOINT = 'https://push.spaceradar.app/users/push-token';
 
 export default async function registerForPushNotificationsAsync(favoriteSpaceUrlArray) {
   const { status: existingStatus } = await Permissions.getAsync(
