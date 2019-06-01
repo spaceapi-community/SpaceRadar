@@ -57,13 +57,18 @@ const changeFavorite = url => (dispatch, getState) => {
       favorite,
     )
   );
+};
 
-  /* const favoriteSpacesUrls = Object.values(getState().spaces.directory)
-    .filter(entry => entry.url === url ? favorite : entry.favorite)
-    .map(entry => entry.url);
+const changePush = url => (dispatch, getState) => {
+  const directory = getState().spaces.directory;
+  directory[url].pushActive = !directory[url].pushActive;
 
-  registerPush(favoriteSpacesUrls).then(() => dispatch(favoritePushUpdated(favoriteSpacesUrls)))
-  */
+  const pushActiveSpacesUrls = Object.values(directory)
+  .filter(entry => entry.pushActive)
+  .map(entry => entry.url);
+
+  registerPush(pushActiveSpacesUrls)
+  .then(() => dispatch(favoritePushUpdated(url, directory[url].pushActive)));
 };
 
 const getCalendarUrl = (space) => {
@@ -81,12 +86,11 @@ const favoriteChanged = (url, favorite) => ({
   favorite,
 });
 
-const favoritePushUpdated = (pushActive, favoriteSpacesUrls) => ({
+const favoritePushUpdated = (url, pushActive) => ({
   type: 'FAVORITE_PUSH_UPDATED',
+  url,
   pushActive,
-  favoriteSpacesUrls,
 });
-
 
 const calendarFetched = (url, events) => ({
   type: 'CALENDAR_FETCHED',
@@ -111,11 +115,11 @@ export const actions = {
   fetchSpaces,
   fetchSpace,
   changeFavorite,
+  changePush,
 };
 
 const initialState = {
   directory: {},
-  pushActive: false,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -149,8 +153,11 @@ export const reducer = (state = initialState, action) => {
 
       return {...state, directory };
     }
-    case 'FAVORITE_PUSH_UPDATED': {
-      return { ...state, pushActive: action.pushActive };
+    case 'FAVORITE_PUSH_CHANGED': {
+      const directory = { ...state.directory };
+      directory[action.url].pushActive = action.pushActive;
+
+      return {...state, directory };
     }
   }
   return state;

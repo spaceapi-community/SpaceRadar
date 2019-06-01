@@ -21,33 +21,35 @@ class Map extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      position: {
-        coords: {
-          "accuracy": 1,
-          "altitude": 0,
-          "heading": 0,
-          "latitude": 0,
-          "longitude": 0,
-          "speed": 0,
-        },
-        "mocked": true,
-        "timestamp": 0,
+      region: {
+        latitude: 37.78825,
+        longitude: -122.4324,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
       }
     };
   }
 
   componentDidMount() {
     this.props.fetchSpaces();
+  }
+
+  onMapReady = () => {
     Permissions.askAsync(Permissions.LOCATION).then(({ status, permissions }) => {
       if (status === 'granted') {
         return Location.getCurrentPositionAsync({enableHighAccuracy: true});
       }
     }).then(position => {
       if (Object.prototype.hasOwnProperty.call(position, "coords")) {
-        this.setState({ position });
+        this.setState({ position: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          } });
       }
     });
-  }
+  };
 
   render() {
     return (
@@ -56,18 +58,8 @@ class Map extends React.Component {
         showsUserLocation={true}
         showsMyLocationButton={true}
         loadingEnabled={true}
-        initialRegion={{
-          latitude: this.state.position.coords.latitude,
-          longitude: this.state.position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        region={{
-          latitude: this.state.position.coords.latitude,
-          longitude: this.state.position.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
+        region={this.state.position}
+        onMapReady={this.onMapReady}
       >
         {Object.values(this.props.directory).map(space => {
           if(space.data && space.data.location && space.data.location.lat && space.data.location.lon) {

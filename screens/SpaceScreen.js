@@ -232,6 +232,17 @@ class SpaceScreen extends React.Component {
             }
           />
           <Button
+              containerStyle={{ flexGrow: 1, padding: 1 }}
+              buttonStyle={{ backgroundColor: '#ccc', }}
+              onPress={() => this.props.changePush(this.props.navigation.getParam("url"))}
+              icon={
+                <Icon
+                    name={this.getFilteredSpaces().pushActive ? 'bell' : 'bell-outline'}
+                    type={'material-community'}
+                />
+              }
+          />
+          <Button
             containerStyle={{ flexGrow: 1, padding: 1 }}
             buttonStyle={{ backgroundColor: '#ccc', }}
             onPress={() => this.props.fetchSpace(this.props.navigation.getParam("url"), true)}
@@ -280,6 +291,7 @@ SpaceScreen.propTypes = {
   fetchSpace: PropTypes.func.isRequired,
   fetchCalendar: PropTypes.func.isRequired,
   changeFavorite: PropTypes.func.isRequired,
+  changePush: PropTypes.func.isRequired,
 };
 
 SpaceScreen.defaultProps = {
