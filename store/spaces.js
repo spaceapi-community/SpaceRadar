@@ -3,8 +3,14 @@ import ical from "cal-parser";
 import registerPush from "../registerPush.js";
 
 const fetchDirectory = () => dispatch => fetch('https://api.spaceapi.io/v2')
-  .then(response => response.json())
-  .then(json => dispatch(directoryFetched(json)));
+  .then(
+      response => response.json(),
+      err => console.log(err)
+  )
+  .then(
+      json => dispatch(directoryFetched(json)),
+      err => console.log(err)
+  );
 
 const fetchSpaces = () => (dispatch, getState) => {
   dispatch(fetchDirectory()).then(() => {
@@ -23,8 +29,14 @@ const fetchSpace = (url, forceFetch = false) => (dispatch, getState) => {
     || moment(space.dataFetched).add(30, 'minutes') < Date.now()
     || forceFetch) {
     return fetch(url)
-      .then(response => response.json())
-      .then(json => dispatch(spaceFetched(url, json)));
+      .then(
+          response => response.json(),
+          err => console.log(err)
+      )
+      .then(
+          json => dispatch(spaceFetched(url, json)),
+          err => console.log(err)
+      );
   }
 };
 
@@ -45,7 +57,10 @@ const fetchCalendar = (url, forceFetch = false) => (dispatch, getState) => {
         }
         return null;
       })
-      .then(events => events ? dispatch(calendarFetched(url, events)) : null);
+      .then(
+          events => events ? dispatch(calendarFetched(url, events)) : null,
+          err => console.log(err)
+      );
   }
 };
 
@@ -68,7 +83,10 @@ const changePush = url => (dispatch, getState) => {
   .map(entry => entry.url);
 
   registerPush(pushActiveSpacesUrls)
-  .then(() => dispatch(favoritePushUpdated(url, directory[url].pushActive)));
+  .then(
+      () => dispatch(favoritePushUpdated(url, directory[url].pushActive)),
+      err => console.log(err)
+  );
 };
 
 const getCalendarUrl = (space) => {
