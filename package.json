@@ -4,6 +4,7 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
+    "web": "expo start --web",
     "eject": "expo eject",
     "test": "node ./node_modules/jest/bin/jest.js --watchAll"
   },
@@ -11,30 +12,40 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/samples": "2.1.1",
-    "@react-native-community/geolocation": "^1.4.0",
+    "@expo/vector-icons": "^10.0.2",
+    "@react-native-community/geolocation": "^1.4.2",
     "babel-polyfill": "^6.26.0",
     "cal-parser": "^1.0.1",
-    "expo": "^32.0.0",
+    "expo": "^33.0.4",
+    "expo-asset": "^5.0.1",
+    "expo-constants": "^5.0.1",
+    "expo-file-system": "^5.0.1",
+    "expo-font": "^5.0.1",
+    "expo-localization": "^5.0.1",
+    "expo-location": "^5.0.1",
+    "expo-web-browser": "^5.0.3",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
-    "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
-    "react-native-calendars": "^1.141.0",
+    "react": "16.8.6",
+    "react-dom": "^16.8.6",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-33.0.0.tar.gz",
+    "react-native-calendars": "^1.185.0",
     "react-native-elements": "^1.1.0",
     "react-native-maps": "^0.24.2",
     "react-native-platform-touchable": "latest",
+    "react-native-web": "^0.11.4",
     "react-navigation": "^3.11.0",
-    "react-redux": "^6.0.0",
+    "react-redux": "^7.0.3",
     "redux": "^4.0.1",
     "redux-persist": "^5.10.0",
     "redux-persist-expo-filesystem": "^1.0.1",
-    "redux-persist-expo-fs-storage": "^1.2.2",
-    "redux-thunk": "^2.3.0"
+    "redux-persist-expo-fs-storage": "^2.0.0",
+    "redux-thunk": "^2.3.0",
+    "expo-permissions": "latest"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
-    "jest-expo": "^32.0.0"
+    "babel-preset-expo": "^5.1.1",
+    "jest-expo": "^33.0.2"
   },
   "private": true
 }

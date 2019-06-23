@@ -2,7 +2,8 @@ import React from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
-import { Location, Permissions } from 'expo';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import { actions } from '../store/spaces';
 
 const mapStateToProps = (state) => ({

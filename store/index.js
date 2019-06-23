@@ -1,11 +1,11 @@
 import { persistCombineReducers } from 'redux-persist'
 import { reducer as spaces } from './spaces';
-import ExpoFileSystemStorage from "redux-persist-expo-filesystem"
+import FSStorage from 'redux-persist-expo-fs-storage';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 
 const persistConfig = {
   key: 'root',
-  storage: ExpoFileSystemStorage,
+  storage: FSStorage(),
   stateReconciler: autoMergeLevel2,
 };
 

@@ -1,4 +1,5 @@
-import { Permissions, Notifications } from 'expo';
+import {  Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 const PUSH_ENDPOINT = 'https://push.spaceradar.app/users/push-token';
 

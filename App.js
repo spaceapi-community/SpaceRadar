@@ -1,6 +1,9 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import {AppLoading, Font, Icon, Localization} from 'expo';
+import {AppLoading} from 'expo';
+import * as Icon from '@expo/vector-icons';
+import * as Localization from 'expo-localization';
+import * as Font from 'expo-font';
 import AppNavigator from './navigation/AppNavigator';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
@@ -66,6 +69,6 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'green',
+    backgroundColor: '#fff',
   },
 });

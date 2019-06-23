@@ -1,15 +1,13 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Image, SectionList, View} from 'react-native';
+import {Text,ScrollView, StyleSheet, Switch, Image, SectionList, View, RefreshControl} from 'react-native';
 import {
-  Button,
-  Text,
   Icon,
 } from 'react-native-elements';
 import {actions as spaceActions} from "../store/spaces";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
 import Touchable from 'react-native-platform-touchable';
-import { WebBrowser } from "expo";
+import { WebBrowser, Linking } from "expo";
 import moment from 'moment';
 
 const mapStateToProps = (state) => ({
@@ -30,14 +28,21 @@ class SpaceScreen extends React.Component {
     };
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      refreshing: false,
+    };
+  }
+
   componentDidMount() {
     this.fetchSpace();
-    this.fetchCalendar();
+    // this.fetchCalendar();
   }
 
   componentDidUpdate() {
     this.fetchSpace();
-    this.fetchCalendar();
+    // this.fetchCalendar();
   }
 
   fetchSpace = () => this.props.fetchSpace(this.props.navigation.getParam("url"));
@@ -57,53 +62,35 @@ class SpaceScreen extends React.Component {
       if (this.getSpace().contact.email) {
         section.data.push({
           iconName: 'email',
-          value: this.getSpace().contact.email,
+          value: (<Text>{this.getSpace().contact.email}</Text>),
         });
       }
       if (this.getSpace().contact.ml) {
         section.data.push({
           iconName: 'contact-mail',
-          value: this.getSpace().contact.ml,
+          value: (<Text>{this.getSpace().contact.ml}</Text>),
         });
       }
       if (this.getSpace().contact.twitter) {
         section.data.push({
           type: 'material-community',
           iconName: 'twitter',
-          value: this.getSpace().contact.twitter,
+          value: (<Text>{this.getSpace().contact.twitter}</Text>),
         });
       }
       if (this.getSpace().contact.irc) {
         section.data.push({
           iconName: 'comment',
-          value: this.getSpace().contact.irc,
+          value: (<Text>{this.getSpace().contact.irc}</Text>),
         });
       }
       if (this.getSpace().contact.phone) {
         section.data.push({
           iconName: 'local-phone',
-          value: this.getSpace().contact.phone,
+          value: (<Text>{this.getSpace().contact.phone}</Text>),
         })
       }
     }
-    return section;
-  };
-
-  getAddressSection = () => {
-    const section = {
-      title: "Address",
-      data: [
-
-      ],
-    };
-
-    if (this.getSpace() && this.getSpace().location && this.getSpace().location.address) {
-      section.data.push({
-        iconName: 'location-on',
-        value: this.getSpace().location.address,
-      });
-    }
-
     return section;
   };
 
@@ -117,7 +104,7 @@ class SpaceScreen extends React.Component {
       if (this.getSpace().state.open != null) {
         section.data.push({
           iconName: 'lock',
-          value: this.getSpace().state.open ? "open" : "closed",
+          value: (<Text>{this.getSpace().state.open ? "open" : "closed"}</Text>),
         });
       }
 
@@ -126,7 +113,7 @@ class SpaceScreen extends React.Component {
         date.setTime(this.getSpace().state.lastchange * 1000);
         section.data.push({
           iconName: 'access-time',
-          value: date.toUTCString(),
+          value: (<Text>{date.toUTCString()}</Text>),
         });
       }
     }
@@ -150,7 +137,7 @@ class SpaceScreen extends React.Component {
         if (event.dtstart.value > currentDate) {
           section.data.push({
             iconName: 'today',
-            value: `${moment(event.dtstart.value).format('YYYY-MM-DD HH:mm')} ${event.summary.value}`,
+            value: (<Text>{`${moment(event.dtstart.value).format('YYYY-MM-DD HH:mm')} ${event.summary.value}`}</Text>),
           });
         }
       });
@@ -180,20 +167,16 @@ class SpaceScreen extends React.Component {
       sections.push(stateSection);
     }
 
-    const addressSection = this.getAddressSection();
-    if (addressSection.data.length > 0) {
-      sections.push(addressSection);
-    }
-
     const contactSection = this.getContactSection();
     if (contactSection.data.length > 0) {
       sections.push(contactSection);
     }
 
-    const eventSection = this.getEvents();
-    if (eventSection.data.length > 0) {
-      sections.push(eventSection);
-    }
+    // const eventSection = this.getEvents();
+    // if (eventSection.data.length > 0) {
+    //   sections.push(eventSection);
+    // }
+
     return sections;
   };
 
@@ -201,15 +184,34 @@ class SpaceScreen extends React.Component {
     WebBrowser.openBrowserAsync(url);
   };
 
+  refreshSpace = () => {
+    this.props.fetchSpace(this.props.navigation.getParam("url"), true);
+    this.setState({refreshing: false});
+  };
+
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <View style={{flex: 1, flexDirection: "row", alignItems: "center",}}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.refreshSpace}
+          />
+        }
+      >
+        <View style={{
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          borderBottomColor: '#ccc',
+          borderBottomWidth: 1,
+        }}>
           <View style={styles.logoContainer}>
             {this.getLogo()}
           </View>
           <View style={{ flex: 1, flexDirection: "column", flexGrow: 2 }}>
-            <Text h3>
+            <Text style={{ fontSize: 28 }}>
               {this.getSpace() && this.getSpace().space}
             </Text>
             {this.getSpace() && <Touchable
@@ -219,69 +221,69 @@ class SpaceScreen extends React.Component {
             </Touchable>}
           </View>
         </View>
-        <View style={styles.settings}>
-          <Button
-            containerStyle={{ flexGrow: 1, padding: 1 }}
-            buttonStyle={{ backgroundColor: '#ccc', }}
-            onPress={() => this.props.changeFavorite(this.props.navigation.getParam("url"))}
-            icon={
-              <Icon
-                name={this.getFilteredSpaces().favorite ? 'favorite' : 'favorite-border'}
-                type={'material'}
-                />
-            }
+        <View style={styles.textContainer}>
+          <Icon
+            name={'location-on'}
+            type={'material'}
+            style={styles.infoIcon}
           />
-          <Button
-              containerStyle={{ flexGrow: 1, padding: 1 }}
-              buttonStyle={{ backgroundColor: '#ccc', }}
-              onPress={() => this.props.changePush(this.props.navigation.getParam("url"))}
-              icon={
-                <Icon
-                    name={this.getFilteredSpaces().pushActive ? 'bell' : 'bell-outline'}
-                    type={'material-community'}
-                />
-              }
-          />
-          <Button
-            containerStyle={{ flexGrow: 1, padding: 1 }}
-            buttonStyle={{ backgroundColor: '#ccc', }}
-            onPress={() => this.props.fetchSpace(this.props.navigation.getParam("url"), true)}
-            icon={
-              <Icon
-                name={'autorenew'}
-                type={'material'}
-              />
-            }
-          />
+          <Touchable
+            background={Touchable.Ripple('#ccc', false)}
+            onPress={() => Linking.openURL("http://maps.google.com/maps?daddr=" + this.getSpace().location.address)}
+          >
+            <Text style={styles.sectionListText}>
+              {this.getSpace().location.address}
+            </Text>
+          </Touchable>
         </View>
-        <View>
-          <SectionList
-            renderItem={({item, index}) => {
-              return (
-                <View style={{flex: 1, flexDirection: "row", alignItems: "center",}}>
-                  <Icon
-                    name={item.iconName ? item.iconName : "warning"}
-                    type={item.type ? item.type : 'material'}
-                    style={styles.infoIcon}
-                  />
-                  <Text key={index}>
-                    {item.value}
-                  </Text>
-                </View>
-              )
-            }}
-            renderSectionHeader={({section: {title}}) => (
-              <View style={{marginTop: 10}}>
-                <Text style={{fontWeight: 'bold'}}>
-                  {title}
+        <SectionList
+          renderItem={({item, index}) => {
+            return (
+              <View style={styles.textContainer}>
+                <Icon
+                  name={item.iconName ? item.iconName : "warning"}
+                  type={item.type ? item.type : 'material'}
+                  style={styles.infoIcon}
+                />
+                <Text style={styles.sectionListText}>
+                  {item.value}
                 </Text>
               </View>
-            )}
-            sections={this.getSections()}
-            keyExtractor={(item, index) => item + index}
+            )
+          }}
+          sections={this.getSections()}
+          keyExtractor={(item, index) => item + index}
+        />
+        <View style={styles.switchContainer}>
+          <Switch
+            trackColor={{
+              false: '#ccc',
+              true: '#4169e144'
+            }}
+            thumbColor={this.getFilteredSpaces().favorite ? '#4169e1ff' : '#999' }
+            onValueChange={() => this.props.changeFavorite(this.props.navigation.getParam("url"))}
+            value={this.getFilteredSpaces().favorite}
           />
+          <Text>
+            Show in favorite list
+          </Text>
+        </View>
+        <View style={styles.switchContainer}>
+          <Switch
+            trackColor={{
+              false: '#ccc',
+              true: '#4169e144'
+            }}
+            thumbColor={this.getFilteredSpaces().pushActive ? '#4169e1ff' : '#999' }
+            onValueChange={() => this.props.changePush(this.props.navigation.getParam("url"))}
+            value={this.getFilteredSpaces().pushActive}
+          />
+          <Text>
+            Notify me if space opens/closes
+          </Text>
         </View>
       </ScrollView>
+
     );
   }
 }
@@ -323,6 +325,31 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around"
   },
+  switchContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 15,
+    paddingRight: 10,
+    paddingBottom: 15,
+    paddingLeft: 10,
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+  },
+  textContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 5,
+    paddingRight: 10,
+    paddingBottom: 5,
+    paddingLeft: 10,
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+  },
+  sectionListText: {
+    paddingLeft: 10,
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SpaceScreen)

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   View,
+  TextInput,
 } from 'react-native';
 import {
   ListItem,
@@ -52,9 +53,15 @@ class HomeScreen extends React.Component {
         )
         : null;
 
+  spaceFilter = (space) =>
+    (this.state && this.state.spaceFilter)
+      ? space.space.toLowerCase().includes(this.state.spaceFilter.toLowerCase())
+      : true;
+
   render() {
     const favorites = Object.values(this.props.spaces)
       .filter(space => space.favorite)
+      .filter(this.spaceFilter)
       .sort(
         (a, b) =>
           a.space.toLowerCase().localeCompare(b.space.toLowerCase())
@@ -62,6 +69,7 @@ class HomeScreen extends React.Component {
 
     const spaces = Object.values(this.props.spaces)
       .filter(space => !space.favorite)
+      .filter(this.spaceFilter)
       .sort(
         (a, b) =>
           a.space.toLowerCase().localeCompare(b.space.toLowerCase())
@@ -69,6 +77,22 @@ class HomeScreen extends React.Component {
 
     return (
       <View style={styles.container}>
+        <View style={styles.searchContainer}>
+          <Icon
+            name={'search'}
+            type={'material'}
+            style={styles.infoIcon}
+          />
+          <TextInput
+            style={{
+              height: 60,
+              paddingLeft: 10,
+              width: '100%',
+            }}
+            placeholder="Search"
+            onChangeText={(spaceFilter) => this.setState({spaceFilter})}
+          />
+        </View>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           {favorites.length > 0 &&
             (
@@ -150,6 +174,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginTop: 3,
     marginLeft: -10,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   getStartedContainer: {
     alignItems: 'center',
