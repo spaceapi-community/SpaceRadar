@@ -52,6 +52,23 @@ class SpaceScreen extends React.Component {
   getSpace = () => this.getFilteredSpaces().data;
   getCalendar = () => this.getFilteredSpaces().events;
 
+  getLocationSection = () => {
+    const section = {
+      title: "Location",
+      data: []
+    };
+
+    if (this.getSpace() && this.getSpace().location) {
+      if (this.getSpace().location.address) {
+        section.data.push({
+          iconName: 'location-on',
+          value: (<Text>{this.getSpace().location.address}</Text>),
+        });
+      }
+    }
+    return section;
+  };
+
   getContactSection = () => {
     const section = {
       title: "Contact",
@@ -162,6 +179,11 @@ class SpaceScreen extends React.Component {
   getSections = () => {
     const sections = [];
 
+    const locationSection = this.getLocationSection();
+    if (locationSection.data.length > 0) {
+      sections.push(locationSection);
+    }
+
     const stateSection = this.getStateSection();
     if (stateSection.data.length > 0) {
       sections.push(stateSection);
@@ -191,7 +213,7 @@ class SpaceScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView
+      <View
         style={styles.container}
         refreshControl={
           <RefreshControl
@@ -220,21 +242,6 @@ class SpaceScreen extends React.Component {
               <Text>{this.getSpace() && this.getSpace().url}</Text>
             </Touchable>}
           </View>
-        </View>
-        <View style={styles.textContainer}>
-          <Icon
-            name={'location-on'}
-            type={'material'}
-            style={styles.infoIcon}
-          />
-          <Touchable
-            background={Touchable.Ripple('#ccc', false)}
-            onPress={() => Linking.openURL("http://maps.google.com/maps?daddr=" + this.getSpace().location.address)}
-          >
-            <Text style={styles.sectionListText}>
-              {this.getSpace().location.address}
-            </Text>
-          </Touchable>
         </View>
         <SectionList
           renderItem={({item, index}) => {
@@ -282,7 +289,7 @@ class SpaceScreen extends React.Component {
             Notify me if space opens/closes
           </Text>
         </View>
-      </ScrollView>
+      </View>
 
     );
   }
